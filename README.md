@@ -1,5 +1,7 @@
 # TextEd v1.0
 
+## Download [here](http://www.mediafire.com/file/k8loihmh13i38uh/file).
+
 TextEd is free a desktop application used for editing text; completely developed using C# and XAML under WPF framework.
 
 ## Libraries
