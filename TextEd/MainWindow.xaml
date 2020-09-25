@@ -1,0 +1,187 @@
+﻿<Window x:Class="TextEd.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:toolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        xmlns:local="clr-namespace:TextEd"
+        mc:Ignorable="d"
+        Title="TextEd" Width="{x:Static SystemParameters.PrimaryScreenWidth}" Height="{x:Static SystemParameters.PrimaryScreenHeight}" WindowState="Maximized" Visibility="Visible" Background="White" Icon="TextEd-icon.ico" WindowStyle="ThreeDBorderWindow" FontFamily="Segoe UI Light">
+    <Grid x:Name="mainGrid" Background="#FFF7F7F7">
+        <ScrollViewer x:Name="scrollViewer">
+            <Grid>
+                <!--Blank page-->
+                <StackPanel x:Name="stackPanel" HorizontalAlignment="Left" Width="890" Height="5000" Margin="516,176,0,0" VerticalAlignment="Top" Background="White"/>
+                <RichTextBox x:Name="rtb" UndoLimit="50" HorizontalAlignment="Left" Margin="549,197,0,84" Width="827" Height="5000" xml:lang="en-US" Background="{x:Null}" BorderBrush="{x:Null}" SelectionBrush="#FF0078D7" Foreground="Black" SelectionChanged="RichTxtBoxSelectionChanged" TextChanged="CountWords" FontSize="16"/>
+            </Grid>
+        </ScrollViewer>
+
+        <!--Labels-->
+        <Label Content="Words count:" HorizontalAlignment="Left" Margin="0,980,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbWordsCount" Content="" HorizontalAlignment="Left" Margin="100,980,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+
+
+        <!--Menu-->
+        <Menu x:Name="menu" Height="28" VerticalAlignment="Top" Background="#FFD2E3FF" BorderBrush="Black">
+            <MenuItem Header="File" FontSize="17" FontFamily="Segoe UI Light">
+                <MenuItem x:Name="new" Header="New" Click="NewOrNewWindow"/>
+                <MenuItem x:Name="newWindow" Header="New window" Click="NewOrNewWindow"/>
+
+                <MenuItem x:Name="open" Header="Open" Click="Open" ToolTip="Supported format: .rtf">
+                    <MenuItem.Icon>
+                        <Image Source="./Resources/Text-Formatting/open.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <MenuItem Header="Export as...">
+                    <MenuItem Header="TextEd (.rtf)" Click="ExportAs" ToolTip="Save to this format if you want to continue working in the future!">
+                        <MenuItem.Icon>
+                            <Image Source="./Resources/Text-Formatting/open.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Text">
+                        <MenuItem x:Name="pdf" Header=".pdf" Click="ExportAs"/>
+                        <MenuItem x:Name="docx" Header=".docx" Click="ExportAs"/>
+                        <MenuItem x:Name="html" Header=".html" Click="ExportAs"/>
+                    </MenuItem>
+                    <MenuItem Header="Picture">
+                        <MenuItem x:Name="jpg" Header=".jpg" Click="ExportAs"/>
+                        <MenuItem x:Name="png" Header=".png" Click="ExportAs"/>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Print" Click="Print"></MenuItem>
+                <MenuItem Header="Settings" Click="Settings"></MenuItem>
+                <MenuItem Header="About" Click="About"></MenuItem>
+            </MenuItem>
+            <MenuItem x:Name="blankItem" Header="" Width="70" IsEnabled="False"/>
+            <MenuItem x:Name="menuHome" Header="Home" TabIndex="0" FontSize="20" MouseEnter="MouseEnterToBold" MouseLeave="MouseLeaveToNormal" StaysOpenOnClick="True" Click="MenuItemClick" FontFamily="Segoe UI Light"/>
+            <MenuItem x:Name="menuInsert" Header="Insert" TabIndex="1" FontSize="20" MouseEnter="MouseEnterToBold" MouseLeave="MouseLeaveToNormal" StaysOpenOnClick="True" Click="MenuItemClick" FontFamily="Segoe UI Light"/>
+            <MenuItem x:Name="menuFormat" Header="Format" TabIndex="2" FontSize="20" MouseEnter="MouseEnterToBold" MouseLeave="MouseLeaveToNormal" StaysOpenOnClick="True" Click="MenuItemClick" FontFamily="Segoe UI Light"/>
+        </Menu>
+
+        <!--Home-->
+        <ToolBarTray x:Name="homeTray" Height="82" VerticalAlignment="Top" Background="#FFEEF5FD" ToolBarTray.IsLocked="True" Margin="0,28,0,0">
+            <ToolBar Band="0" BandIndex="0">
+                <Button x:Name="cut" ToolTip="Cut (CTRL + X)" Click="Cut">
+                    <Image Source="./Resources/Text-Formatting/cut.png" Height="25" Width="25"/>
+                </Button>
+            </ToolBar>
+
+            <ToolBar Band="1" BandIndex="0">
+                <Button x:Name="copy" ToolTip="Copy (CTRL + C)" Click="Copy">
+                    <Image Source="./Resources/Text-Formatting/copy.png" Height="25" Width="25"></Image>
+                </Button>
+            </ToolBar>
+
+            <ToolBar Width="60" Band="0" BandIndex="1">
+                <Label x:Name="lbCut" Content="Cut"  Height="25" Width="30" VerticalAlignment="Center" IsEnabled="False"/>
+            </ToolBar>
+
+            <ToolBar Width="60" Band="1" BandIndex="1">
+                <Label x:Name="lbCopy" Content="Copy" Height="25" Width="40" VerticalAlignment="Center" IsEnabled="False"/>
+            </ToolBar>
+
+            <ToolBar Width="225" Band="0" BandIndex="2">
+                <ComboBox x:Name="cmbFonts" HorizontalAlignment="Center" IsEditable="True" VerticalAlignment="Center" Width="135" Background="#FFFBFBFB" BorderBrush="#FFB4B1B1" SelectionChanged="TxtFont"/>
+                <ComboBox x:Name="cmbFontSize" HorizontalAlignment="Center" IsEditable="True" VerticalAlignment="Center" Width="43" BorderBrush="#FFB4B1B1" Margin="15, 0, 0, 1" Background="White" SelectionChanged="TxtFontSize"/>
+            </ToolBar>
+
+            <ToolBar Band="0" BandIndex="3">
+                <ToggleButton x:Name="alignmentLeft" Checked="Alignment">
+                    <Image Width="32" Height="32" ToolTip="Allign left (CTRL + L)" Source="./Resources/Alignment/align-left.png"/>
+                </ToggleButton>
+
+                <ToggleButton x:Name="alignmentCenter" Checked="Alignment">
+                    <Image Width="32" Height="32" ToolTip="Allign center (CTRL + E)" Source="./Resources/Alignment/align-center.png"/>
+                </ToggleButton>
+
+                <ToggleButton x:Name="alignmentRight" Checked="Alignment">
+                    <Image Width="32" Height="32" ToolTip="Allign right (CTRL + R)" Source="./Resources/Alignment/align-right.png"/>
+                </ToggleButton>
+
+                <ToggleButton x:Name="alignmentJustify" Checked="Alignment">
+                    <Image Width="32" Height="32" ToolTip="Justify (CTRL + J)" Source="./Resources/Alignment/align-justify.png"/>
+                </ToggleButton>
+            </ToolBar>
+
+            <ToolBar Band="1" BandIndex="2" Width="145" Height="30">
+                <ToggleButton Command="EditingCommands.ToggleBold" x:Name="bold" ToolTip="Bold (CTRL + B)" Width="30">
+                    <Image Source="./Resources/Text-Formatting/bold.png" Height="12.5" Width="12.5"/>
+                </ToggleButton>
+
+                <ToggleButton Command="EditingCommands.ToggleItalic" x:Name="italic" ToolTip="Italic (CTRL + I)" Width="30">
+                    <Image Source="./Resources/Text-Formatting/italic.png" Height="15" Width="15"></Image>
+                </ToggleButton>
+
+                <ToggleButton Command="EditingCommands.ToggleUnderline" x:Name="underline" ToolTip="Underlined (CTRL + U)" Width="30">
+                    <Image Source="./Resources/Text-Formatting/underline.png" Height="18" Width="18"></Image>
+                </ToggleButton>
+
+                <Button>
+                    <Image Height="24" Width="30" x:Name="txtHeight" Source="./Resources/Text-Formatting/Aa.png" MouseLeftButtonDown="AaMenuOpen">
+                        <Image.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="ALL CAPITAL" FontSize="17" FontFamily="Segoe UI Light" Click="AaOptions"/>
+                                <MenuItem Header="all small" FontSize="17" FontFamily="Segoe UI Light" Click="AaOptions"/>
+                                <MenuItem Header="First letter capital" FontSize="17" FontFamily="Segoe UI Light" Click="AaOptions"/>
+                            </ContextMenu>
+                        </Image.ContextMenu>
+                    </Image>
+                </Button>
+            </ToolBar>
+
+            <ToolBar Band="1" BandIndex="3" Height="30" Width="80">
+                <ToggleButton x:Name="superscript" ToolTip="Superscript" Click="Superscript">
+                    <Image Source="Resources/Text-Formatting/superscript.png" Height="21" Width="20"/>
+                </ToggleButton>
+
+                <ToggleButton x:Name="subscript" ToolTip="Subscript" Click="Subscript">
+                    <Image Source="Resources/Text-Formatting/subscript.png" Height="21" Width="20"/>
+                </ToggleButton>
+            </ToolBar>
+
+            <ToolBar Band="1" BandIndex="3" Width="169" ToolBarTray.IsLocked="True">
+                <toolkit:ColorPicker Margin="25, 0, 0, 0" x:Name="foregroundColor" Width="40" SelectedColorChanged="ForegroundColor"/>
+                <toolkit:ColorPicker Margin="25, 0, 0, 0" x:Name="backgroundColor" Width="40" SelectedColorChanged="BackgroundColor"/>
+            </ToolBar>
+
+            <ToolBar Band="0" BandIndex="4" Margin="1350, 0, 0, 0" Width="60">
+                <Button x:Name="btnFindReplace" ToolTip="Find / Replace" Click="FindReplace">
+                    <Image Height="35" Width="35" Source="./Resources/Text-Formatting/findReplace.png"/>
+                </Button>
+            </ToolBar>
+
+        </ToolBarTray>
+
+        <!--Insert-->
+        <ToolBarTray Visibility="Collapsed" x:Name="insertTray" Height="80" Width="{x:Static SystemParameters.PrimaryScreenWidth}" VerticalAlignment="Top" Background="#FFEEF5FD" ToolBarTray.IsLocked="True" Margin="0, 30, 0, 0">
+
+            <ToolBar Band="0" BandIndex="1" Margin="0,0,10,1">
+
+                <Button x:Name="btnPasteImg"  Margin="10, 0, 0, 0"/>
+
+                <Label x:Name="lbNumbering" Content="Numbering" Height="25" Width="75" VerticalAlignment="Center" IsEnabled="False" Margin="-10,0,0,0"/>
+                <Button x:Name="btnNumbering" Click="Numbering">
+                    <Image Width="40" Height="28" Source="./Resources/Text-Formatting/numbering.ico"/>
+                </Button>
+
+
+            </ToolBar>
+
+            <ToolBar Band="1" BandIndex="1" Margin="0,0,11,-1">
+                <Button x:Name="btnInsertSymbol"/>
+
+                <Label x:Name="lbBulletPoints" Content="Bullet points" Height="25" Width="75" VerticalAlignment="Center" IsEnabled="False" Margin="0,0,0,0"/>
+                <Button x:Name="btnBulletPoints" Click="BulletPoints">
+                    <Image Width="40" Height="28" Source="./Resources/Text-Formatting/bullet-points.png"/>
+                </Button>
+            </ToolBar>
+
+        </ToolBarTray>
+
+        <ToolBarTray Visibility="Collapsed" x:Name="formatTray" Height="80" Width="{x:Static SystemParameters.PrimaryScreenWidth}" VerticalAlignment="Top" Background="#FFEEF5FD" ToolBarTray.IsLocked="True" Margin="0, 30, 0, 0">
+
+        </ToolBarTray>
+
+    </Grid>
+</Window>
