@@ -78,3 +78,9 @@ TextEd is free a desktop application used for editing text; completely developed
 | Application doesn't appear properly on laptops   | 
 | Margins in toolbars (hard or impossible to click) |
 
+# Appearance
+
+![](../master/TextEd/TextEd.png)
+
+
+
