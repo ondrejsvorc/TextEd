@@ -4,6 +4,8 @@
 
 TextEd is free a desktop application used for editing text; completely developed using C# and XAML under WPF framework.
 
+The application competed in [ITnetwork summer contest 2020](https://www.itnetwork.cz/csharp/wpf/zdrojove-kody/texted-textovy-procesor)
+
 ## Libraries
 
 | Library  | Used for |
