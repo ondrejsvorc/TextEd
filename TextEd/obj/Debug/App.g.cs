@@ -61,6 +61,8 @@ namespace TextEd {
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main() {
+            SplashScreen splashScreen = new SplashScreen("resources/loading-screen/loading_screen.png");
+            splashScreen.Show(true);
             TextEd.App app = new TextEd.App();
             app.InitializeComponent();
             app.Run();

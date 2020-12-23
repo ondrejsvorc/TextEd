@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\TextEd\obj\Debug\
+C:\Users\Ondra\source\repos\TextEd\obj\Debug\
 TextEd
 none
 false
 DEBUG;TRACE
-C:\TextEd\App.xaml
-5-2021251566
+C:\Users\Ondra\source\repos\TextEd\App.xaml
+4436766960
 
-10-915455658
-1501144461628
-AboutSection.xaml;FindReplace.xaml;LoadingScreen.xaml;MainWindow.xaml;Settings.xaml;
-
+91447420220
+150-945885593
+AboutSection.xaml;FindReplace.xaml;MainWindow.xaml;Settings.xaml;
+resources\loading-screen\loading_screen.png
 False
 

@@ -1,20 +1,24 @@
 ﻿using System;
 using Microsoft.Win32;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Collections.Generic;
-using System.Windows;
 using System.IO;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using GemBox.Document;
-using System.Windows.Controls.Primitives;
+using System.Security.Principal;
+using System.Management;
+using System.Diagnostics;
+using System.Reflection;
 using Color = System.Windows.Media.Color;
 using Inline = System.Windows.Documents.Inline;
 using Paragraph = System.Windows.Documents.Paragraph;
-using Image = System.Windows.Controls.Image;
+
 
 namespace TextEd
 {
@@ -25,46 +29,52 @@ namespace TextEd
 
         public MainWindow()
         {
-            LoadingScreen();
-
             InitializeComponent();
 
+            GetComponentStates();
             Config();
 
             LoadFonts();
             LoadFontSizes();
-        }
-
-        void LoadingScreen()
-        {
-            LoadingScreen loadingScreen = new LoadingScreen();
-
-            loadingScreen.Show();
-            Thread.Sleep(1000);                        // waits for one second 
-            loadingScreen.Close();
+            LoadZoomOptions();
         }
 
         void Config()
         {
-            ComponentInfo.SetLicense("FREE-LIMITED-KEY");
+            ComponentInfo.SetLicense("FREE-LIMITED-KEY");                          // To make GemBox library work
 
-            rtb.AcceptsTab = true;                     // makes TAB key work 
-            rtb.SpellCheck.IsEnabled = true;           // checks spelling
-            rtb.Focus();                               // starts the app with a cursor in the richtextbox
-            rtb.BorderThickness = new Thickness(0);    // no border
+            page1.AcceptsTab = true;                                               // To make TAB key work 
+            page1.SpellCheck.IsEnabled = true;                                     // Checks spelling
+            page1.Focus();                                                         // Cursor starts in the richtextbox
+            page1.BorderThickness = new Thickness(0);                              // No border
 
-            cmbFonts.SelectedIndex = 0;                // starts from font: Arial
-            cmbFontSize.SelectedIndex = 4;             // fontsize when loaded: 16
+            cmbFonts.SelectedItem = 0;                                             // Starts from none
+
+            cmbFontSize.SelectedIndex = 4;                                         // Fontsize when loaded: 16
+
+            cbZoom.SelectedIndex = 90;                                             // Starts at 100%
 
             foregroundColor.ShowDropDownButton = false;
             backgroundColor.ShowDropDownButton = false;
 
             try
             {
-                foregroundColor.SelectedColor = Color.FromRgb(0, 0, 0);             // sets black color as foreground for text
-                backgroundColor.SelectedColor = Color.FromArgb(0, 255, 255, 255);   // sets transparent as background for text
+                foregroundColor.SelectedColor = Color.FromRgb(0, 0, 0);            // Black color as foreground for text
+                backgroundColor.SelectedColor = Color.FromRgb(255, 255, 255);      // White color as background for text
             }
             catch { }
+        }
+
+        // WORKS FINE!!! :) JUST DESIGN SETTINGS MENU AND ADD THE COMPONENTS
+        void GetComponentStates()
+        {
+            //checkBoxTest.IsChecked = Properties.Settings.Default.test;
+        }
+
+        void SetComponentStates()
+        {
+            //Properties.Settings.Default.test = (bool)checkBoxTest.IsChecked;
+            //Properties.Settings.Default.Save();
         }
 
         void LoadFonts()
@@ -74,65 +84,21 @@ namespace TextEd
 
         void LoadFontSizes()
         {
-            var fontSizes = new List<int>();
+            List<int> fontSizes = new List<int>();
 
-            for (int i = 8; i < 122; i += 2)             // loads font sizes: 8-120 
-            {                                            // pattern: 8, 10, 12...
+            for (int i = 8; i < 122; i += 2)             // Load fontsizes: 8-120 
+            {                                            // Pattern: 8, 10, 12...
                 fontSizes.Add(i);
             }
 
             cmbFontSize.ItemsSource = fontSizes;
         }
 
-        private void MouseEnterToBold(object sender, MouseEventArgs e)
+        void LoadZoomOptions()
         {
-            ((MenuItem)sender).FontWeight = FontWeights.Bold;
-        }
-
-        private void MouseLeaveToNormal(object sender, MouseEventArgs e)
-        {
-            ((MenuItem)sender).FontWeight = FontWeights.Normal;
-        }
-
-        private void RichTxtBoxSelectionChanged(object sender, RoutedEventArgs e)
-        {
-            sel = rtb.Selection;
-
-            obj = sel.GetPropertyValue(Inline.FontSizeProperty);
-            cmbFontSize.Text = obj.ToString();
-
-            obj = sel.GetPropertyValue(Inline.FontWeightProperty);
-            bold.IsChecked = (obj != DependencyProperty.UnsetValue) && (obj.Equals(FontWeights.Bold));
-
-            obj = sel.GetPropertyValue(Inline.FontStyleProperty);
-            italic.IsChecked = (obj != DependencyProperty.UnsetValue) && (obj.Equals(FontStyles.Italic));
-
-            obj = sel.GetPropertyValue(Inline.TextDecorationsProperty);
-            underline.IsChecked = (obj != DependencyProperty.UnsetValue) && (obj.Equals(TextDecorations.Underline));
-        }
-
-        private void MenuItemClick(object sender, RoutedEventArgs e)
-        {
-            if (((MenuItem)sender).Header.ToString() != "Home")             
+            for (int i = 10; i < 501; i++)
             {
-                if (((MenuItem)sender).Header.ToString() == "Insert")       
-                {
-                    HideFormat();
-                    HideHome();
-                    ShowInsert();
-                }                                                           
-                else
-                {
-                    HideHome();
-                    HideInsert();    
-                    ShowFormat();
-                }
-            }
-            else
-            {
-                HideFormat();
-                HideInsert();
-                ShowHome();
+                cbZoom.Items.Add(i + "%");
             }
         }
 
@@ -166,22 +132,74 @@ namespace TextEd
             formatTray.Visibility = Visibility.Collapsed;
         }
 
+        private void MouseEnterToBold(object sender, MouseEventArgs e)
+        {
+            ((MenuItem)sender).FontWeight = FontWeights.Bold;
+        }
+
+        private void MouseLeaveToNormal(object sender, MouseEventArgs e)
+        {
+            ((MenuItem)sender).FontWeight = FontWeights.Normal;
+        }
+
+        private void RichTxtBoxSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            sel = page1.Selection;
+
+            obj = sel.GetPropertyValue(Inline.FontSizeProperty);
+            cmbFontSize.Text = obj.ToString();
+
+            obj = sel.GetPropertyValue(Inline.FontWeightProperty);
+            bold.IsChecked = (obj != DependencyProperty.UnsetValue) && (obj.Equals(FontWeights.Bold));
+
+            obj = sel.GetPropertyValue(Inline.FontStyleProperty);
+            italic.IsChecked = (obj != DependencyProperty.UnsetValue) && (obj.Equals(FontStyles.Italic));
+
+            obj = sel.GetPropertyValue(Inline.TextDecorationsProperty);
+            underline.IsChecked = (obj != DependencyProperty.UnsetValue) && (obj.Equals(TextDecorations.Underline));
+        }
+
+        private void MenuItemClick(object sender, RoutedEventArgs e)
+        {
+            if (((MenuItem)sender).Header.ToString() != "Home")             // If it's not Home what's been clicked
+            {
+                if (((MenuItem)sender).Header.ToString() == "Insert")       // and not even insert,
+                {
+                    HideFormat();
+                    HideHome();
+                    ShowInsert();
+                }                                                           // then it's format
+                else
+                {
+                    HideHome();
+                    HideInsert();       // TO-DO CHANGE THE LOGIC (TOOLBARTRAY1 VISIBILITY = TOOLBARTRAY2 VISIBILITY = FALSE)
+                    ShowFormat();
+                }
+            }
+            else
+            {
+                HideFormat();
+                HideInsert();
+                ShowHome();
+            }
+        }
+
         private void Cut(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(rtb.Selection.Text);                        // sets text of clipboard to the selexted one
-            rtb.Selection.Text = string.Empty;                            // removes the selected text
+            Clipboard.SetText(page1.Selection.Text);                        // Sets text of clipboard to the selexted one
+            page1.Selection.Text = string.Empty;                            // Removes the selected text
         }
 
         private void Copy(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(rtb.Selection.Text);                        // sets text of clipboard to the selexted one = copies it
+            Clipboard.SetText(page1.Selection.Text);                        // Sets text of clipboard to the selected one = copies it
         }
 
         private void TxtFont(object sender, SelectionChangedEventArgs e)
         {
             if (cmbFonts.SelectedItem != null)
             {
-                rtb.Selection.ApplyPropertyValue(FontFamilyProperty, cmbFonts.SelectedItem);
+                page1.Selection.ApplyPropertyValue(FontFamilyProperty, cmbFonts.SelectedItem);
             }
         }
 
@@ -189,29 +207,34 @@ namespace TextEd
         {
             try
             {
-                rtb.Selection.ApplyPropertyValue(FontSizeProperty, Convert.ToDouble(((ComboBox)sender).SelectedItem));
+                page1.Selection.ApplyPropertyValue(FontSizeProperty, Convert.ToDouble(((ComboBox)sender).SelectedItem));
             }
             catch { }
         }
 
         private void Alignment(object sender, RoutedEventArgs e)
         {
-            sel = rtb.Selection;
+            // TO - DO - CHANGE THE LOGIC, IF POSSIBLE - ISCHECKED
 
-            switch (((ToggleButton)sender).Name)
+            sel = page1.Selection;
+
+            switch (((System.Windows.Controls.Primitives.ToggleButton)sender).Name)
             {
                 case "alignmentLeft":
                     sel.ApplyPropertyValue(Paragraph.TextAlignmentProperty, TextAlignment.Left);
                     alignmentCenter.IsChecked = alignmentRight.IsChecked = alignmentJustify.IsChecked = false;
                     break;
+
                 case "alignmentCenter":
                     sel.ApplyPropertyValue(Paragraph.TextAlignmentProperty, TextAlignment.Center);
                     alignmentLeft.IsChecked = alignmentRight.IsChecked = alignmentJustify.IsChecked = false;
                     break;
+
                 case "alignmentRight":
                     sel.ApplyPropertyValue(Paragraph.TextAlignmentProperty, TextAlignment.Right);
                     alignmentCenter.IsChecked = alignmentLeft.IsChecked = alignmentJustify.IsChecked = false;
                     break;
+
                 case "alignmentJustify":
                     sel.ApplyPropertyValue(Paragraph.TextAlignmentProperty, TextAlignment.Justify);
                     alignmentCenter.IsChecked = alignmentLeft.IsChecked = alignmentRight.IsChecked = false;
@@ -222,114 +245,54 @@ namespace TextEd
         private void ExportAs(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
-            TextRange textRange = new TextRange(rtb.Document.ContentStart, rtb.Document.ContentEnd);
+            TextRange textRange = new TextRange(page1.Document.ContentStart, page1.Document.ContentEnd);
+
+            string menuItem = ((MenuItem)sender).Header.ToString();
 
             dialog.Title = "Exporting...";
             dialog.CreatePrompt = true;
 
-            switch (((MenuItem)sender).Header.ToString())                   // can also be: switch ((string)((MenuItem)sender).Header)
+            if (menuItem == "TextEd (.rtf)")
             {
-                case "TextEd (.rtf)":
-                    dialog.FileName = ".rtf";
-                    dialog.Filter = "TextEd RTF (*.rtf)|*.rtf";
+                dialog.FileName = ".rtf";
+                dialog.Filter = "TextEd RTF (*.rtf)|*.rtf";
+            }
+            else if (menuItem == ".pdf")
+            {
+                dialog.FileName = ".pdf";
+                dialog.Filter = "PDF (*.pdf)|*.pdf|All files (*.*)|*.*";
+            }
+            else if (menuItem == ".docx")
+            {
+                dialog.FileName = ".docx";
+                dialog.Filter = "Microsoft Word Document (*.docx)|*.docx|All files (*.*)|*.*";
+            }
+            else if (menuItem == ".html")
+            {
+                dialog.FileName = ".html";
+                dialog.Filter = "HTML (*.html)|*.html|All files (*.*)|*.*";
+            }
+            else if (menuItem == ".jpg")
+            {
+                dialog.FileName = ".jpg";
+                dialog.Filter = "JPG (*.jpg)|*.jpg*";
+            }
+            else if (menuItem == ".png")
+            {
+                dialog.FileName = ".png";
+                dialog.Filter = "PNG (*.png)|*.png*";
+            }
 
-                    if ((bool)dialog.ShowDialog())
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            textRange.Save(stream, DataFormats.Rtf);
+            if ((bool)dialog.ShowDialog())
+            {
+                using (var stream = new MemoryStream())
+                {
+                    textRange.Save(stream, DataFormats.Rtf);
 
-                            stream.Position = 0;
+                    stream.Position = 0;
 
-                            DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
-                        }
-                    }
-                    break;
-
-                case ".pdf":
-                    dialog.Filter = "PDF (*.pdf)|*.pdf|All files (*.*)|*.*";
-                    dialog.FileName = ".pdf";
-
-                    if ((bool)dialog.ShowDialog())
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            textRange.Save(stream, DataFormats.Rtf);
-
-                            stream.Position = 0;
-
-                            DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
-                        }
-                    }
-                    break;
-
-                case ".docx":
-                    dialog.Filter = "Microsoft Word Document (*.docx)|*.docx|All files (*.*)|*.*";
-                    dialog.FileName = ".docx";
-
-                    if ((bool)dialog.ShowDialog())
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            textRange.Save(stream, DataFormats.Rtf);
-
-                            stream.Position = 0;
-
-                            DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
-                        }
-                    }
-                    break;
-
-                case ".html":
-                    dialog.Filter = "HTML (*.html)|*.html|All files (*.*)|*.*";
-                    dialog.FileName = ".html";
-
-                    if ((bool)dialog.ShowDialog())
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            textRange.Save(stream, DataFormats.Rtf);
-
-                            stream.Position = 0;
-
-                            DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
-                        }
-                    }
-                    break;
-
-                case ".jpg":
-                    dialog.Filter = "JPG (*.jpg)|*.jpg*";
-                    dialog.FileName = ".jpg";
-
-                    if ((bool)dialog.ShowDialog())
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            textRange.Save(stream, DataFormats.Rtf);
-
-                            stream.Position = 0;
-
-                            DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
-                        }
-                    }
-                    break;
-
-                case ".png":
-                    dialog.Filter = "PNG (*.png)|*.png*";
-                    dialog.FileName = ".png";
-
-                    if ((bool)dialog.ShowDialog())
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            textRange.Save(stream, DataFormats.Rtf);
-
-                            stream.Position = 0;
-
-                            DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
-                        }
-                    }
-                    break;
+                    DocumentModel.Load(stream, LoadOptions.RtfDefault).Save(dialog.FileName);
+                }
             }
         }
 
@@ -337,28 +300,29 @@ namespace TextEd
         {
             MainWindow newWindow = new MainWindow();
 
-            if (((MenuItem)sender).Header.ToString() == "New")
+            switch (((MenuItem)sender).Header)
             {
-                newWindow.Activate();
-                this.Close();
-            }
-            else
-            {
-                newWindow.Activate();
-                newWindow.Topmost = true;
+                case "New":
+                    newWindow.Activate();
+                    this.Close();
+                    break;
+
+                case "New window":
+                    newWindow.Activate();
+                    newWindow.Topmost = true;
+                    break;
             }
         }
 
         private void About(object sender, RoutedEventArgs e)
         {
             AboutSection aboutSection = new AboutSection();
-
             aboutSection.Show();
         }
 
         private void CountWords(object sender, TextChangedEventArgs e)
         {
-            TextRange docContent = new TextRange(rtb.Document.ContentStart, rtb.Document.ContentEnd);
+            TextRange docContent = new TextRange(page1.Document.ContentStart, page1.Document.ContentEnd);
 
             lbWordsCount.Content = Regex.Matches(docContent.Text, @"[\S]+").Count;  // \S --> Matches any character that is not whitespace 
                                                                                     // +  --> Without it, it would count only chars, but with it it counts word
@@ -375,7 +339,7 @@ namespace TextEd
 
         private void AaOptions(object sender, RoutedEventArgs e)
         {
-            sel = rtb.Selection;
+            sel = page1.Selection;
 
             switch (((MenuItem)sender).Header)
             {
@@ -399,8 +363,8 @@ namespace TextEd
 
             if ((bool)printDialog.ShowDialog())
             {
-                rtb.SpellCheck.IsEnabled = false;
-                printDialog.PrintVisual(rtb as Visual, "");
+                page1.SpellCheck.IsEnabled = false;
+                printDialog.PrintDocument((((IDocumentPaginatorSource)page1.Document).DocumentPaginator), "printing as paginator");
             }
         }
 
@@ -408,19 +372,20 @@ namespace TextEd
         {
             SolidColorBrush brushForeground = new SolidColorBrush((Color)foregroundColor.SelectedColor);
 
-            rtb.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, brushForeground);
+            page1.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, brushForeground);
         }
 
         private void BackgroundColor(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
             SolidColorBrush brushBackground = new SolidColorBrush((Color)backgroundColor.SelectedColor);
 
-            rtb.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, brushBackground);
+            page1.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, brushBackground);
         }
+
 
         private void Superscript(object sender, RoutedEventArgs e)
         {
-            sel = rtb.Selection;
+            sel = page1.Selection;
 
             if ((bool)subscript.IsChecked)
             {
@@ -437,7 +402,7 @@ namespace TextEd
 
         private void Subscript(object sender, RoutedEventArgs e)
         {
-            sel = rtb.Selection;
+            sel = page1.Selection;
 
             if ((bool)superscript.IsChecked)
             {
@@ -452,9 +417,24 @@ namespace TextEd
             }
         }
 
-        private void FindReplace(object sender, RoutedEventArgs e)
+        private void TxtToUrl(object sender, RoutedEventArgs e)
         {
-            FindReplace findReplaceWindow = new FindReplace(new TextRange(rtb.Document.ContentStart, rtb.Document.ContentEnd), rtb);
+            // TO-DO
+            // Open the URL when holding CTRL + Click
+
+            string url = page1.Selection.Text;
+
+            if (url.StartsWith("www.") || url.StartsWith("https://") || url.StartsWith("http://"))
+            {
+                sel.ApplyPropertyValue(Inline.TextDecorationsProperty, TextDecorations.Underline);
+                sel.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Color.FromRgb(33, 124, 255)));
+
+            }
+        }
+
+        private void FindReplace(object sender, RoutedEventArgs e)      // btnFindReplace click event
+        {
+            FindReplace findReplaceWindow = new FindReplace(new TextRange(page1.Document.ContentStart, page1.Document.ContentEnd), page1);
 
             findReplaceWindow.Show();
         }
@@ -470,26 +450,25 @@ namespace TextEd
 
             if ((bool)openDialog.ShowDialog())
             {
-                rtb.SelectAll();                                                                            // selects all
-                rtb.Selection.Load(new FileStream(openDialog.FileName, FileMode.Open), DataFormats.Rtf);    // replaces the selection with new content
+                page1.SelectAll();
+                page1.Selection.Load(new FileStream(openDialog.FileName, FileMode.Open), DataFormats.Rtf);
             }
         }
 
         private void Settings(object sender, RoutedEventArgs e)
         {
-            Settings settingsWindow = new Settings(cmbFonts.ItemsSource, cmbFontSize.ItemsSource);
+            Settings settingsWindow = new Settings();
             settingsWindow.Show();
         }
 
         private void BulletPoints(object sender, RoutedEventArgs e)
         {
-            EditingCommands.ToggleBullets.Execute(null, rtb);
+            EditingCommands.ToggleBullets.Execute(null, page1);
         }
 
         private void Numbering(object sender, RoutedEventArgs e)
         {
-            EditingCommands.ToggleNumbering.Execute(null, rtb);
+            EditingCommands.ToggleNumbering.Execute(null, page1);
         }
-
     }
 }

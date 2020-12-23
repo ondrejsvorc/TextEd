@@ -15,7 +15,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Ondra\TextEd_setup\</PublishUrl>
+    <PublishUrl>C:\Users\Ondra\Desktop\Setup\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -25,9 +25,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ProductName>TextEd</ProductName>
-    <PublisherName>Ondřej Švorc</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
+    <SuiteName>Ondřej Švorc</SuiteName>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -58,7 +57,7 @@
     <ApplicationIcon>TextEd-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
@@ -191,10 +190,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoadingScreen.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -208,9 +203,6 @@
     </Compile>
     <Compile Include="FindReplace.xaml.cs">
       <DependentUpon>FindReplace.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LoadingScreen.xaml.cs">
-      <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -266,7 +258,7 @@
     <Resource Include="Resources\Alignment\align-right.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Loading-Screen\loading_screen.png" />
+    <SplashScreen Include="Resources\Loading-Screen\loading_screen.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="TextEd-icon.ico" />

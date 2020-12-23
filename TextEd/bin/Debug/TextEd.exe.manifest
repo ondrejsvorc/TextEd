@@ -235,14 +235,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TextEd.exe" size="575488">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TextEd.exe" size="575456">
       <assemblyIdentity name="TextEd" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>mH33NrP3+90S226CDswXGkZ2XMDJQdZlXVu2QEbnGxw=</dsig:DigestValue>
+        <dsig:DigestValue>D7hKUwSMIAnNjSG7n+lnWz4qb9al/W1G3fdeasMduFM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -462,13 +462,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="TextEd.exe.config" size="1328">
+  <file name="TextEd.exe.config" size="1973">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>5jMbTbwV+O8eZr2xnx7QiW+7I7Tm8ZBLuqRalmJxq7c=</dsig:DigestValue>
+      <dsig:DigestValue>xHaHY3JZbYPXy/NpgHKE7lG+FiZsqppI82Eot5llwXQ=</dsig:DigestValue>
     </hash>
   </file>
   <file name="TextEd-icon.ico" size="133902">

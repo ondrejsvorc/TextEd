@@ -1,24 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 
 namespace TextEd
 {
     public partial class FindReplace : Window
     {
-        private TextRange range;
-        private RichTextBox rtb;
+        public TextRange textRange;
+        public RichTextBox rich;
 
         public FindReplace(TextRange textRange, RichTextBox rich)
         {
             InitializeComponent();
 
-            range = textRange;
-            rtb = rich;
+            this.textRange = textRange;
+            this.rich = rich;
         }
 
         private void MenuItemClick(object sender, RoutedEventArgs e)
@@ -55,10 +62,12 @@ namespace TextEd
             ((MenuItem)sender).FontWeight = FontWeights.Normal;
         }
 
-        static IEnumerable<TextRange> ConvertWordsToTextRanges(FlowDocument doc)
+        // yield return returs object of IEnumerable type, each element one at a time
+        // *yield break: stops
+        private static IEnumerable<TextRange> ConvertWordsToTextRanges(FlowDocument doc)               
         {
             TextPointer pointer = doc.ContentStart;
-            while (pointer != null)                                                     // while there is some more text
+            while (pointer != null)                                                                    // While there is some more text
             {
                 if (pointer.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
                 {
@@ -67,22 +76,23 @@ namespace TextEd
 
                     foreach (Match match in matches)
                     {
-                        int startIndex = match.Index;                                   // first char
-                        int length = match.Length;                                      // the lenght
-                        TextPointer start = pointer.GetPositionAtOffset(startIndex);    // gets to the first char
-                        TextPointer end = start.GetPositionAtOffset(length);            // gets to the last char
-                        yield return new TextRange(start, end);                         // selects the match
+                        int startIndex = match.Index;                                   // First char
+                        int length = match.Length;                                      // The lenght
+                        TextPointer start = pointer.GetPositionAtOffset(startIndex);    // Gets to the first char
+                        TextPointer end = start.GetPositionAtOffset(length);            // Gets to the last char
+                        yield return new TextRange(start, end);                         // Selects the match
                     }
                 }
-                pointer = pointer.GetNextContextPosition(LogicalDirection.Forward);     // checks if there is more text
+
+                pointer = pointer.GetNextContextPosition(LogicalDirection.Forward);     // Checks if there is more text
             }
         }
         
-        void RegexNotCaseSensitive()
+        private void RegexNotCaseSensitive()
         {
-            if (Regex.IsMatch(range.Text.ToLower(), @"\b" + txtBoxFind.Text.ToLower() + @"\b"))     //word break regex
+            if (Regex.IsMatch(textRange.Text.ToLower(), @"\b" + txtBoxFind.Text.ToLower() + @"\b")) //word break regex
             {
-                IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rtb.Document);
+                IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rich.Document);
                 foreach (TextRange wordRange in wordRanges)
                 {
                     if (wordRange.Text.ToLower() == txtBoxFind.Text.ToLower())
@@ -93,11 +103,11 @@ namespace TextEd
             }
         }
 
-        void RegexCaseSensitive()
+        private void RegexCaseSensitive()
         {
-            if (Regex.IsMatch(range.Text, @"\b" + txtBoxFind.Text + @"\b"))                         //word break regex
+            if (Regex.IsMatch(textRange.Text, @"\b" + txtBoxFind.Text + @"\b")) //word break regex
             {
-                IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rtb.Document);
+                IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rich.Document);
                 foreach (TextRange wordRange in wordRanges)
                 {
                     if (wordRange.Text == txtBoxFind.Text)
@@ -110,7 +120,7 @@ namespace TextEd
 
         private void Replace(object sender, RoutedEventArgs e)
         {
-            IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rtb.Document);
+            IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rich.Document);
 
             foreach (TextRange wordRange in wordRanges)
             {
@@ -119,9 +129,7 @@ namespace TextEd
                     wordRange.Text = txtBoxReplaceWith.Text;
                 }
             }
-            Unhighlight();                                              // once replaced, unhighlight
         }
-
 
         private void Highlight(object sender, TextChangedEventArgs e)
         {
@@ -140,9 +148,9 @@ namespace TextEd
             }
         }
 
-        void Unhighlight()
+        private void Unhighlight()
         {
-            IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rtb.Document);
+            IEnumerable<TextRange> wordRanges = ConvertWordsToTextRanges(rich.Document);
 
             foreach (TextRange wordRange in wordRanges)
             {

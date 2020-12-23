@@ -1,26 +1,94 @@
-﻿<Window x:Name="findReplaceWindow" x:Class="TextEd.FindReplace"
+﻿<Window x:Name="findReplaceWindow"
+        x:Class="TextEd.FindReplace"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TextEd"
-        mc:Ignorable="d"
-        Title="Find / Replace" Height="300" Width="510" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" FontSize="36" Topmost="True" Closing="WindowIsClosing">
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="Find / Replace"
+        Width="510"
+        Height="300"
+        Closing="WindowIsClosing"
+        FontSize="36"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d">
     <Grid>
-        <Menu  Background="#FFD2E3FF" Width="510" VerticalAlignment="Top" HorizontalAlignment="Left">
-            <MenuItem x:Name="find" Header="Find" IsChecked="True" TabIndex="0" FontSize="20" MouseEnter="MouseEnterToBold" MouseLeave="MouseLeaveToNormal" StaysOpenOnClick="True" Click="MenuItemClick" FontFamily="Segoe UI Light"/>
-            <MenuItem x:Name="replace" Header="Replace" TabIndex="1" FontSize="20" MouseEnter="MouseEnterToBold" MouseLeave="MouseLeaveToNormal" StaysOpenOnClick="True" FontFamily="Segoe UI Light" Click="MenuItemClick"/>
+        <Menu Width="510"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Background="#FFD2E3FF">
+            <MenuItem x:Name="find"
+                      Click="MenuItemClick"
+                      FontFamily="Segoe UI Light"
+                      FontSize="20"
+                      Header="Find"
+                      IsChecked="True"
+                      MouseEnter="MouseEnterToBold"
+                      MouseLeave="MouseLeaveToNormal"
+                      StaysOpenOnClick="True"
+                      TabIndex="0" />
+            <MenuItem x:Name="replace"
+                      Click="MenuItemClick"
+                      FontFamily="Segoe UI Light"
+                      FontSize="20"
+                      Header="Replace"
+                      MouseEnter="MouseEnterToBold"
+                      MouseLeave="MouseLeaveToNormal"
+                      StaysOpenOnClick="True"
+                      TabIndex="1" />
         </Menu>
 
-        <Label x:Name="lbFind" FontSize="18" Content="Find:" HorizontalContentAlignment="Left" Margin="10,92,360,0" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
-        <Label x:Name="lbReplace" Visibility="Collapsed" FontSize="18" Content="Replace:" HorizontalContentAlignment="Left" Margin="10,134,360,0" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
-        <TextBox x:Name="txtBoxFind" HorizontalAlignment="Left" FontSize="25" Height="30" Margin="144,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340" TextChanged="Highlight"/>
-        <TextBox x:Name="txtBoxReplaceWith" Visibility="Collapsed" HorizontalAlignment="Left" FontSize="25" Height="30" Margin="144,136,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340"/>
-        <Button x:Name="btnConfirm" Content="Find" Visibility="Collapsed" FontSize="24" HorizontalAlignment="Left" Margin="200,220,0,0" VerticalAlignment="Top" Width="104" Height="34" Click="Replace"/>
-        <CheckBox x:Name="checkBoxCaseSensitive" Content="Case-Sensitive" FontSize="13" HorizontalAlignment="Left" Margin="10,238,0,0" VerticalAlignment="Top"/>
-
-        <Label Content="TextEd" HorizontalContentAlignment="Center" VerticalAlignment="Top" FontFamily="Yu Gothic UI Light" FontSize="20" Margin="398,224,21,0" Height="34"/>
-        <Image Source="TextEd-icon.ico" HorizontalAlignment="Left" Height="20" Margin="371,234,0,0" VerticalAlignment="Top" Width="30" Stretch="Fill"/>
-
+        <Label x:Name="lbFind"
+               Margin="10,92,360,0"
+               VerticalAlignment="Top"
+               HorizontalContentAlignment="Left"
+               Content="Find:"
+               FontFamily="Yu Gothic Medium"
+               FontSize="18" />
+        <Label x:Name="lbReplace"
+               Margin="10,134,360,0"
+               VerticalAlignment="Top"
+               HorizontalContentAlignment="Left"
+               Content="Replace:"
+               FontFamily="Yu Gothic Medium"
+               FontSize="18"
+               Visibility="Collapsed" />
+        <TextBox x:Name="txtBoxFind"
+                 Width="340"
+                 Height="30"
+                 Margin="144,96,0,0"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 FontSize="25"
+                 TextChanged="Highlight"
+                 TextWrapping="Wrap" />
+        <TextBox x:Name="txtBoxReplaceWith"
+                 Width="340"
+                 Height="30"
+                 Margin="144,136,0,0"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 FontSize="25"
+                 TextWrapping="Wrap"
+                 Visibility="Collapsed" />
+        <Button x:Name="btnConfirm"
+                Width="104"
+                Height="34"
+                Margin="200,220,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Click="Replace"
+                Content="Find"
+                FontSize="24"
+                Visibility="Collapsed" />
+        <CheckBox x:Name="checkBoxCaseSensitive"
+                  Margin="10,238,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Content="Case-Sensitive"
+                  FontSize="13" />
     </Grid>
 </Window>

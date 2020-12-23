@@ -22,5 +22,17 @@ namespace TextEd.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool test {
+            get {
+                return ((bool)(this["test"]));
+            }
+            set {
+                this["test"] = value;
+            }
+        }
     }
 }
