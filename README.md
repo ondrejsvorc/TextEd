@@ -84,5 +84,8 @@ The application competed in [ITnetwork summer contest 2020](https://www.itnetwor
 
 ![](../master/TextEd/TextEd.png)
 
+## Video
+[![](https://img.youtube.com/vi/JsOziaOux7g/0.jpg)](https://youtu.be/JsOziaOux7g)
+
 
 
